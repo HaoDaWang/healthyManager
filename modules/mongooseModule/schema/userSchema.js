@@ -9,16 +9,15 @@ let userSchema = new mongoose.Schema({
     telNum:{ type:String },
     passw:{ type:String },
     invitTelNum:{ type:String },
-    level:{ type:Number },
-    totalMoney:{ type:Number },
+    level:{ type:Number, default:0 },
+    totalMoney:{ type:Number, default:0 },
     nowMoney:{
-        jljcj:{ type:number, default:0 },
-        gwjcj:{ type:number, default:0 },
-        zzjcj:{ type:number, default:0 },
-        ltjcj:{ type:number, default:0 }
+        jljcj:{ type:Number, default:0 },
+        gwjcj:{ type:Number, default:0 },
+        zzjcj:{ type:Number, default:0 },
+        ltjcj:{ type:Number, default:0 }
     },
-    dealTime:{ type:Date },
-    teamInform:{ type:Array }
+    teamInform:{ type:Array, default:[] }
 });
 
 module.exports = userSchema;
