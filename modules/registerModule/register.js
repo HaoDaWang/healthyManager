@@ -4,7 +4,7 @@ let userModel = require('../mongooseModule/model/userModel');
 //封装为promise
 let registerPromise = (userName, passw, telNum, invitTelNum) => {
     return new Promise((resolve,reject) => {
-        return (function register(userName, passw, telNum, invitTelNum){
+        return (function register(userName, passw, telNum, invitTelNum,validCode){
             //创建模型实例
             let userEntity = new userModel({
                 userName:userName,

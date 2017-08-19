@@ -25,11 +25,20 @@ router.post('/registe',(req,res) => {
     //模块懒加载
     let register = require(path.join(modulesPath,'registerModule','register'));
     let obj = req.body;
-    //注册
-    (async function(){
-        let result = await register(obj.userName,obj.passw,obj.telNum,obj.invitTelNum);
-        res.json(result);
-    })();
+    //验证码验证
+    let validCode = obj.validCode;
+    if(req.validCode && validCode == req.validCode){
+        //注册
+        (async function(){
+            let result = await register(obj.userName,obj.passw,obj.telNum,obj.invitTelNum);
+            res.json(result);
+        })();
+    }
+    //验证失败
+    else {
+        res.json({validErr:'手机验证码错误'})
+    }
+    
 });
 
 //登录
@@ -58,13 +67,33 @@ router.post('/adminLogin',(req,res) => {
         }
         res.json(result);
     })();
-    //做result判断是否存在 TODO
-    //
 })
 
 //发送验证码接口
 router.post('/getValidCode',(req,res) => {
-    
+    let createValid = require(path.join(modulesPath,'validCodeModule','createValidCode'));
+    let code = createValid()
+    req.validCode = code
+    const SMSClient = require('@alicloud/sms-sdk/index');
+    const accessKeyId = 'LTAI4wvnYRtFekNN'
+    const secretAccessKey = 'KQCtiOnkBwo8rY1zsLJUu27vkldgET'
+    let smsClient = new SMSClient({accessKeyId,secretAccessKey});
+    //发送短信
+    smsClient.sendSMS({
+        PhoneNumbers: '13881268972',
+        SignName: '健康精灵',
+        TemplateCode: 'SMS_86690107',
+        TemplateParam: '{"validCode":"'+code+'"}'
+    }).then(function (res) {
+        let {Code}=res
+        if (Code === 'OK') {
+            //处理返回参数
+            console.log(res)
+        }
+    }, function (err) {
+        console.log(err)
+    })
+    res.end();
 });
 
 //充值接口
