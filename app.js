@@ -24,16 +24,17 @@ app.use(cookieParser());
 //设置静态目录
 app.use(express.static(path.join(__dirname, 'public')));
 
+//拦截所有路由
 app.use('/', routerManager);
 
-// catch 404 and forward to error handler
+// 未找到页面 404
 app.use(function(req, res, next) {
   var err = new Error('Not Found');
   err.status = 404;
   next(err);
 });
 
-// error handler
+// 服务器内部错误 抛出500
 app.use(function(err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
@@ -43,5 +44,10 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
+//捕获未捕获的promise异常
+process.on('unhandledRejection',(reason,p) => {
+    console.log(JSON.stringify(reason));
+})
 
 module.exports = app;
