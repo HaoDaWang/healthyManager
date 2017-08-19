@@ -93,12 +93,14 @@ router.post('/getValidCode',(req,res) => {
             //处理返回参数
             console.log(data)
             result = {successful:"发送成功"}
+            res.json(result);
         }
     }, function (err) {
         console.log(err)
         result = {error:"发送失败"}
+        res.json(result);
     })
-    res.json(result);
+    
 });
 
 //充值接口
