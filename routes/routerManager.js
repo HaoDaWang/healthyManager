@@ -12,6 +12,9 @@ router.all("*",(req,res,next) => {
     next();
 })
 
+//手机验证码
+let globalValidCode = null;
+
 //模块路径
 let modulesPath = '../modules'
 
@@ -27,7 +30,8 @@ router.post('/registe',(req,res) => {
     let obj = req.body;
     //验证码验证
     let validCode = obj.validCode;
-    if(req.validCode && validCode == req.validCode){
+    console.log(`req.validCode : ${globalValidCode}  obj.validCode : ${obj.validCode}`);
+    if(globalValidCode && validCode == globalValidCode){
         //注册
         (async function(){
             let result = await register(obj.userName,obj.passw,obj.telNum,obj.invitTelNum);
@@ -73,7 +77,7 @@ router.post('/adminLogin',(req,res) => {
 router.post('/getValidCode',(req,res) => {
     let createValid = require(path.join(modulesPath,'validCodeModule','createValidCode'));
     let code = createValid()
-    req.validCode = code
+    globalValidCode = code
     const SMSClient = require('@alicloud/sms-sdk/index');
     const accessKeyId = 'LTAI4wvnYRtFekNN'
     const secretAccessKey = 'KQCtiOnkBwo8rY1zsLJUu27vkldgET'
@@ -100,6 +104,7 @@ router.post('/getValidCode',(req,res) => {
         result = {error:"发送失败"}
         res.json(result);
     })
+    res.json({successful:code});
     
 });
 
