@@ -80,7 +80,7 @@ router.post('/getValidCode',(req,res) => {
     let smsClient = new SMSClient({accessKeyId,secretAccessKey});
     //发送短信
     smsClient.sendSMS({
-        PhoneNumbers: '13881268972',
+        PhoneNumbers: req.body.telNum + '',
         SignName: '健康精灵',
         TemplateCode: 'SMS_86690107',
         TemplateParam: '{"validCode":"'+code+'"}'
