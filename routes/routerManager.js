@@ -89,11 +89,11 @@ router.post('/getValidCode',(req,res) => {
         if (Code === 'OK') {
             //处理返回参数
             console.log(res)
+            res.json({successful:'验证码发送成功'})
         }
     }, function (err) {
         console.log(err)
     })
-    res.end();
 });
 
 //充值接口
