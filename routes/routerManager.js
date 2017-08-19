@@ -78,7 +78,7 @@ router.post('/getValidCode',(req,res) => {
     const accessKeyId = 'LTAI4wvnYRtFekNN'
     const secretAccessKey = 'KQCtiOnkBwo8rY1zsLJUu27vkldgET'
     let smsClient = new SMSClient({accessKeyId,secretAccessKey});
-    console.log("telNum ------------------------- :" + req.body);
+    console.log("telNum ------------------------- :" + JSON.stringify(req.body));
     //返回的json
     let result = null;
     //发送短信
