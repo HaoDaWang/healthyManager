@@ -78,22 +78,27 @@ router.post('/getValidCode',(req,res) => {
     const accessKeyId = 'LTAI4wvnYRtFekNN'
     const secretAccessKey = 'KQCtiOnkBwo8rY1zsLJUu27vkldgET'
     let smsClient = new SMSClient({accessKeyId,secretAccessKey});
+    console.log("telNum ------------------------- :" + req.body);
+    //返回的json
+    let result = null;
     //发送短信
     smsClient.sendSMS({
         PhoneNumbers: req.body.telNum + '',
         SignName: '健康精灵',
         TemplateCode: 'SMS_86690107',
         TemplateParam: '{"validCode":"'+code+'"}'
-    }).then(function (res) {
-        let {Code}=res
+    }).then(function (data) {
+        let {Code}=data
         if (Code === 'OK') {
             //处理返回参数
-            console.log(res)
-            res.json({successful:'验证码发送成功'})
+            console.log(data)
+            result = {successful:"发送成功"}
         }
     }, function (err) {
         console.log(err)
+        result = {error:"发送失败"}
     })
+    res.json(result);
 });
 
 //充值接口
