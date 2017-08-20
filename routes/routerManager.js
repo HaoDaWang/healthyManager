@@ -109,8 +109,20 @@ router.post('/getValidCode',(req,res) => {
 
 //修改密码接口
 router.post('/editPassw',(req,res) => {
-    console.log(req.session.telNum);
-    res.end();
+    let obj = req.body;
+    //验证成功
+    // if(globalValidCode && obj.validCode == globalValidCode){
+        //懒加载修改密码模块
+        let editPassw = require(path.join(modulesPath,'editPasswModule','editPassw'));
+        (async function(){
+            let result = await editPassw(obj.telNum,obj.passw);
+            res.json(result);
+        })();
+    // }
+    //验证失败
+    // else{
+    //     res.json({err:'验证码错误'});
+    // }
 })
 
 //充值接口
