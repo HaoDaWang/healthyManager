@@ -4,6 +4,7 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var session = require('express-session');
 
 var routerManager = require('./routes/routerManager');
 
@@ -23,6 +24,14 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 //设置静态目录
 app.use(express.static(path.join(__dirname, 'public')));
+//session
+app.use(session({
+    secret:"zzh",
+    resave:false,
+    cookie:{
+        maxAge:30 * 60 * 1000
+    }
+}))
 
 //拦截所有路由
 app.use('/', routerManager);

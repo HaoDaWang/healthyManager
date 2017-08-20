@@ -48,15 +48,26 @@ router.post('/registe',(req,res) => {
 //登录
 router.post('/login',(req,res) => {
     let login = require(path.join(modulesPath,'loginModule','login'))
+    //加密模块
+    let crypto = require('crypto');
+    const secret = "abcde";
+    let cookieID = crypto.createHmac('sha256',secret).update((Date.parse(new Date)).toString()).digest();
+    //cookie过期时间 30min
+    let cookieMaxAge = 30 * 60 * 1000
+    //写入cookie
+    res.cookie('cookieID',cookieID.toString(),{maxAge:cookieMaxAge, httpOnly:true})
+
     let obj = req.body;
-    console.log(`telNum:${obj.telNum} passw:${obj.passw}`);
+    req.session.telNum = obj.telNum;
+    console.log(`login: telNum:${obj.telNum} passw:${obj.passw}`);
     (async function(){
-        let result = await adminLogin(obj.telNum,obj.passw);
+        let result = await login(obj.telNum,obj.passw);
         if(result.successful){
             if(result.successful.length == 0) res.json({err:'账号密码不符'});
         }
         res.json(result);
     })();
+    
 })
 
 //管理员登录
@@ -75,47 +86,42 @@ router.post('/adminLogin',(req,res) => {
 
 //发送验证码接口
 router.post('/getValidCode',(req,res) => {
-    let createValid = require(path.join(modulesPath,'validCodeModule','createValidCode'));
-    let code = createValid()
-    globalValidCode = code
-    const SMSClient = require('@alicloud/sms-sdk/index');
-    const accessKeyId = 'LTAI4wvnYRtFekNN'
-    const secretAccessKey = 'KQCtiOnkBwo8rY1zsLJUu27vkldgET'
-    let smsClient = new SMSClient({accessKeyId,secretAccessKey});
-    console.log("telNum ------------------------- :" + JSON.stringify(req.body));
+    let sendValidCode = require(path.join(modulesPath,'validCodeModule','sendValidCode'));
     //返回的json
     let result = null;
-    //发送短信
-    smsClient.sendSMS({
-        PhoneNumbers: req.body.telNum + '',
-        SignName: '健康精灵',
-        TemplateCode: 'SMS_86690107',
-        TemplateParam: '{"validCode":"'+code+'"}'
-    }).then(function (data) {
-        let {Code}=data
-        if (Code === 'OK') {
-            //处理返回参数
-            console.log(data)
-            result = {successful:"发送成功"}
-            res.json(result);
+    (async function(){
+        try{
+            let data = await sendValidCode(req.body.telNum);
+            let {Code}=data
+            if (Code === 'OK') {
+                //处理返回参数
+                console.log(data)
+                result = {successful:"发送成功"}
+                res.json(result);
+            }
         }
-    }, function (err) {
-        console.log(err)
-        result = {error:"发送失败"}
-        res.json(result);
-    })
-    res.json({successful:code});
-    
+        catch(e){
+            console.log('have a err is :' + e)
+            res.json({err:e})
+        }
+    })();
 });
 
+//修改密码接口
+router.post('/editPassw',(req,res) => {
+    console.log(req.session.telNum);
+    res.end();
+})
+
 //充值接口
-router.post('/moneyStream/charge',(req,res) => {
-    
+router.get('/moneyStream/charge',(req,res) => {
+    console.log(req.session);
+    res.end();
 });
 
 //扣款接口
-router.post('/moneyStream/reduce',(req,res) => {
-
+router.get('/moneyStream/reduce',(req,res) => {
+    
 })
 
 

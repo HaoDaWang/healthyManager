@@ -13,11 +13,26 @@ let registerPromise = (userName, passw, telNum, invitTelNum) => {
                 invitTelNum:invitTelNum
             });
 
-            //保存数据
-            userEntity.save((err,doc) => {
-                if(err) reject({err:JSON.stringify(err)});
-                resolve({successful:doc})
-            });
+            userModel.find({telNum:telNum},(err,docs) =>　{
+                if(err){
+                    reject({err:JSON.stringify(err)})
+                }
+                else{
+                    if(docs.length > 0){
+                        //账号已经存在
+                        resolve({err:'账号已经存在'});
+                    }
+                    else {
+                        //保存数据
+                        userEntity.save((err,doc) => {
+                            if(err) reject({err:JSON.stringify(err)});
+                            resolve({successful:doc})
+                        });
+                    }
+                }
+            })
+
+           
         })(userName, passw, telNum, invitTelNum)
     });
 }

@@ -1,4 +1,4 @@
-let userSchema = require('../mongooseModule/schema/userSchema');
+let userModel = require('../mongooseModule/model/userModel');
 /**
  * 登录模块
  */
@@ -6,9 +6,9 @@ let userSchema = require('../mongooseModule/schema/userSchema');
 let loginPromise = (telNum,passw) => {
     return new Promise((resolve,reject) => {
         return (function login(telNum,passw){
-            userSchema.find({telNum:telNum, passw:passw},(err,docs) => {
+            userModel.find({telNum:telNum, passw:passw},(err,docs) => {
                 if(err) reject({ err:JSON.stringify(err) });
-                return resove({ successful:docs })
+                resolve({ successful:docs });
             });
         })(telNum,passw);
     })
