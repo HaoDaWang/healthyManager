@@ -3,7 +3,7 @@
  */
 const mongoose = require('mongoose');
 
-//创建集合数据架构
+//创建用户集合数据架构
 let userSchema = new mongoose.Schema({
     userName:{ type:String },
     telNum:{ type:String },
@@ -11,13 +11,17 @@ let userSchema = new mongoose.Schema({
     invitTelNum:{ type:String },
     level:{ type:Number, default:0 },
     totalMoney:{ type:Number, default:0 },
-    nowMoney:{
-        jljcj:{ type:Number, default:0 },
-        gwjcj:{ type:Number, default:0 },
-        zzjcj:{ type:Number, default:0 },
-        ltjcj:{ type:Number, default:0 }
+    nowMoney:{type:Number, default:0},
+    healthyMoney:{
+        jljkj:{ type:Number, default:0 },
+        gwjkj:{ type:Number, default:0 },
+        zzjkj:{ type:Number, default:0 },
+        ltjkj:{ type:Number, default:0 }
     },
-    teamInform:{ type:Array, default:[] }
+    teamInform:{ type:Array, default:[] },
+    registeTime:{type:Date, default:null},
+    isFreeze:{type:Boolean, default:false},
+    state:{type:String ,default:'正常账号'}
 });
 
 module.exports = userSchema;

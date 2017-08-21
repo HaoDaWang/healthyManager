@@ -1,4 +1,5 @@
 let userModel = require('../mongooseModule/model/userModel');
+let dealModel = require('../mongooseModule/model/dealModel');
 
 //注册模块
 //封装为promise
@@ -12,7 +13,7 @@ let registerPromise = (userName, passw, telNum, invitTelNum) => {
                 telNum:telNum,
                 invitTelNum:invitTelNum
             });
-
+            //查询是否被注册
             userModel.find({telNum:telNum},(err,docs) =>　{
                 if(err){
                     reject({err:JSON.stringify(err)})
@@ -23,16 +24,32 @@ let registerPromise = (userName, passw, telNum, invitTelNum) => {
                         resolve({err:'账号已经存在'});
                     }
                     else {
-                        //保存数据
-                        userEntity.save((err,doc) => {
-                            if(err) reject({err:JSON.stringify(err)});
-                            resolve({successful:doc})
+                        //判断上级用户是否存在
+                        userModel.find({telNum:invitTelNum},(err,docs) => {
+                            if(err){
+                                reject(err)
+                            }
+                            if((!docs) || docs.length == 0){
+                                console.log("docs       111111    :            " + docs);
+                                resolve({err:'推荐人电话不存在'});
+                            }
+                            else {
+                                let teamInform = docs[0].teamInform;
+                                teamInform.push(telNum)
+                                userModel.update({telNum:invitTelNum},{$set:{teamInform:teamInform}},(err,docs) => {
+                                    if(err) reject(err);
+                                    //保存数据
+                                    userEntity.save((err,doc) => {
+                                        if(err) reject({err:JSON.stringify(err)});
+                                        resolve({successful:doc})
+                                    });
+                                    
+                                })
+                            }
                         });
                     }
                 }
             })
-
-           
         })(userName, passw, telNum, invitTelNum)
     });
 }

@@ -8,7 +8,18 @@ let loginPromise = (telNum,passw) => {
         return (function login(telNum,passw){
             userModel.find({telNum:telNum, passw:passw},(err,docs) => {
                 if(err) reject({ err:JSON.stringify(err) });
-                resolve({ successful:docs });
+                if((!docs) || docs.length == 0){
+                    resolve({err:'账号密码不符'})
+                }
+                else {
+                    //符合
+                    if(docs[0].isFreeze){
+                        resolve({err:'该账号已被冻结'})
+                    }
+                    else {
+                        resolve({ successful:docs });  
+                    }
+                }
             });
         })(telNum,passw);
     })

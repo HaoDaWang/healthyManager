@@ -35,10 +35,11 @@ router.post('/registe',(req,res) => {
         //注册
         (async function(){
             let result = await register(obj.userName,obj.passw,obj.telNum,obj.invitTelNum);
+            console.log(`result : ${JSON.stringify(result)}`);
             res.json(result);
         })();
     }
-    //验证失败
+    // 验证失败
     else {
         res.json({validErr:'手机验证码错误'})
     }
@@ -91,14 +92,9 @@ router.post('/getValidCode',(req,res) => {
     let result = null;
     (async function(){
         try{
-            let data = await sendValidCode(req.body.telNum);
-            let {Code}=data
-            if (Code === 'OK') {
-                //处理返回参数
-                console.log(data)
-                result = {successful:"发送成功"}
-                res.json(result);
-            }
+            let code = await sendValidCode(req.body.telNum);
+            globalValidCode = code.code;
+            res.json({successful:'发送成功'});
         }
         catch(e){
             console.log('have a err is :' + e)
@@ -111,25 +107,118 @@ router.post('/getValidCode',(req,res) => {
 router.post('/editPassw',(req,res) => {
     let obj = req.body;
     //验证成功
-    // if(globalValidCode && obj.validCode == globalValidCode){
+    if(globalValidCode && obj.validCode == globalValidCode){
         //懒加载修改密码模块
         let editPassw = require(path.join(modulesPath,'editPasswModule','editPassw'));
         (async function(){
             let result = await editPassw(obj.telNum,obj.passw);
             res.json(result);
         })();
-    // }
+    }
     //验证失败
-    // else{
-    //     res.json({err:'验证码错误'});
-    // }
+    else{
+        res.json({err:'验证码错误'});
+    }
 })
+
+//后台控制主页面
+router.get('/backControl',(req,res) => {
+    if(!req.session.telNum) res.redirect()
+
+});
+
+//获得所有用户信息
+router.get('/getAllUsers',(req,res) => {
+    const getAllUsers = require(path.join(modulesPath,'userInfo','getAllUsers'));
+    (async function(){
+        let result = await getAllUsers();
+        res.json(result);
+    })();
+})
+
+//重置密码
+router.post('/resetPassw',(req,res) => {
+    const resetPassw = require(path.join(modulesPath,'userInfo','resetPassw'));
+    (async function(){
+        let result = await resetPassw(req.body.telNum);
+        res.json(result);
+    })();
+})
+
+//查看健康金详情
+router.post('/getHealthyMoney',(req,res) => {
+    const getHealthyMoney = require(path.join(modulesPath,'userInfo','getHealthyMoney'));
+    (async function(){
+        let result = await getHealthyMoney(req.body.telNum);
+        res.json(result);
+    })();
+})
+
+//获取下级用户
+router.post('/getTeamInform',(req,res) => {
+    const getTeamInform = require(path.join(modulesPath,'userInfo','getTeamInform'));
+    (async function(){
+        let result = await getTeamInform(req.body.telNum);
+        res.json(result);
+    })();
+});
+
+//锁定账号
+router.post('/freezeUser',(req,res) => {
+    const freezeUser = require(path.join(modulesPath,'userInfo','freezeUser'));
+    (async function(){
+        let result = await freezeUser(req.body.telNum);
+        res.json(result);
+    })()
+});
+
+//解锁账号
+router.post('/unFreezeUser',(req,res) => {
+    const unFreezeUser = require(path.join(modulesPath,'userInfo','unFreezeUser'));
+    (async function(){
+        let result = await unFreezeUser(req.body.telNum);
+        res.json(result);
+    })()
+});
 
 //充值接口
 router.get('/moneyStream/charge',(req,res) => {
-    console.log(req.session);
-    res.end();
+    const userModel = require(path.join(modulesPath,'mongooseModule','model','userModel'));
+    userModel.update({telNum:"18582967447"},{userName:"a"},(err,docs) => {
+        if(err){
+            res.json(err);
+        }
+        else{
+            res.json({'docs':docs});
+        }
+    });
+    // let obj = req.body;
+    // (async function(){
+    //     let result = await chargeMoney(obj.telNum,obj.sum,obj.type);
+    //     res.json(result);      
+    // })();
 });
+
+router.post('/moneyStream/adminChargeMoney',(req,res) => {
+    let obj = req.body;
+    if(obj.type == '充值'){
+        const adminCharge = require(path.join(modulesPath,'moneyStream','adminChargeMoney'));
+        (async function(){
+            let result = await adminCharge(obj.telNum,obj.sum);
+            res.json(result);
+        })();
+    }
+    if(obj.type == '扣款'){
+        const adminWithdraw = require(path.join(modulesPath,'moneyStream','adminChargeMoney'));
+        (async function(){
+            let result = await adminWithdraw(obj.telNum,obj.sum);
+            res.json(result);
+        })();
+    }
+    else{
+        res.json({err:'请输入正确的类型'});
+    }
+})
 
 //扣款接口
 router.get('/moneyStream/reduce',(req,res) => {
