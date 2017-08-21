@@ -17,7 +17,7 @@ let loginPromise = (telNum,passw) => {
                         resolve({err:'该账号已被冻结'})
                     }
                     else {
-                        resolve({ successful:docs });  
+                        resolve({successful:"登录成功"});  
                     }
                 }
             });
