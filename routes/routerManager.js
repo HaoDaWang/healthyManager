@@ -199,16 +199,17 @@ router.get('/moneyStream/charge',(req,res) => {
     // })();
 });
 
-router.post('/moneyStream/adminChargeMoney',(req,res) => {
+router.post('/moneyStream/adminChangeMoney',(req,res) => {
     let obj = req.body;
-    if(obj.type == '充值'){
+    console.log(obj.type);
+    if(obj.type == "充值"){
         const adminCharge = require(path.join(modulesPath,'moneyStream','adminChargeMoney'));
         (async function(){
             let result = await adminCharge(obj.telNum,obj.sum);
             res.json(result);
         })();
     }
-    if(obj.type == '扣款'){
+    else if(obj.type == '扣款'){
         const adminWithdraw = require(path.join(modulesPath,'moneyStream','adminChargeMoney'));
         (async function(){
             let result = await adminWithdraw(obj.telNum,obj.sum);
