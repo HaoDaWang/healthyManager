@@ -194,6 +194,15 @@ router.post('/moneyStream/adminChangeMoney',(req,res) => {
     }
 })
 
+//能获取指定人的信息
+router.post('/getUser',(req,res) => {
+    const getUser = require(path.join(modulesPath,'userInfo','getUser'));
+    (async function(){
+        let result = await getUser(req.body.telNum);
+        res.json(result)
+    })();
+})
+
 router.get('/remove',(req,res) => {
     const removeImg = require(path.join(modulesPath,'charges','removeImg'));
     (async function(){
@@ -201,5 +210,7 @@ router.get('/remove',(req,res) => {
        res.json(result);
     })();
 });
+
+
 
 module.exports = router
