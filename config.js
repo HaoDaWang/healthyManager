@@ -1,3 +1,5 @@
-let index = 1;
+let config = {
+    modulesPath:'../modules'
+}
 
-module.exports = index;
+module.exports = config;

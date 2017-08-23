@@ -7,6 +7,7 @@ var bodyParser = require('body-parser');
 var session = require('express-session');
 
 var routerManager = require('./routes/routerManager');
+var chargeManager = require('./routes/chargeManager');
 
 var app = express();
 
@@ -19,6 +20,7 @@ app.set('view engine', 'jade');
 app.use(logger('dev'));
 //解析json中间件
 app.use(bodyParser.json());
+//解析post数据
 app.use(bodyParser.urlencoded({ extended: false }));
 //解析cookie中间件
 app.use(cookieParser());
@@ -33,6 +35,18 @@ app.use(session({
     }
 }))
 
+//CORS跨域
+app.all("*",(req,res,next) => {
+    res.setHeader("Access-Control-Allow-Origin","*");
+    res.header("Access-Control-Allow-Headers", "X-Requested-With");  
+    res.header("Access-Control-Allow-Methods","PUT,POST,GET,DELETE,OPTIONS");  
+    res.header("X-Powered-By",' 3.2.1')  
+    res.header("Content-Type", "application/json;charset=utf-8");
+    next();
+})
+
+//拦截充值管理页面
+app.use('/chargeManager',chargeManager);
 //拦截所有路由
 app.use('/', routerManager);
 

@@ -19,7 +19,7 @@ let userSchema = new mongoose.Schema({
         ltjkj:{ type:Number, default:0 }
     },
     teamInform:{ type:Array, default:[] },
-    registeTime:{type:Date, default:null},
+    registeTime:{type:Date, default:new Date()},
     isFreeze:{type:Boolean, default:false},
     state:{type:String ,default:'正常账号'}
 });

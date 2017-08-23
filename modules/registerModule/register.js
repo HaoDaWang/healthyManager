@@ -1,5 +1,4 @@
 let userModel = require('../mongooseModule/model/userModel');
-let dealModel = require('../mongooseModule/model/dealModel');
 
 //注册模块
 //封装为promise
@@ -11,7 +10,8 @@ let registerPromise = (userName, passw, telNum, invitTelNum) => {
                 userName:userName,
                 passw:passw,
                 telNum:telNum,
-                invitTelNum:invitTelNum
+                invitTelNum:invitTelNum,
+                registeTime:new Date()
             });
             //查询是否被注册
             userModel.find({telNum:telNum},(err,docs) =>　{

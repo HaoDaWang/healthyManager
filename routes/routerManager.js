@@ -2,21 +2,11 @@ const express = require('express')
 const router = express.Router()
 const path = require('path')
 
-//CORS跨域
-router.all("*",(req,res,next) => {
-    res.setHeader("Access-Control-Allow-Origin","*");
-    res.header("Access-Control-Allow-Headers", "X-Requested-With");  
-    res.header("Access-Control-Allow-Methods","PUT,POST,GET,DELETE,OPTIONS");  
-    res.header("X-Powered-By",' 3.2.1')  
-    res.header("Content-Type", "application/json;charset=utf-8");
-    next();
-})
-
 //手机验证码
 let globalValidCode = null;
 
 //模块路径
-let modulesPath = '../modules'
+let modulesPath = require('../config').modulesPath;
 
 //重定向到首页
 router.get('/',(req,res) => {
@@ -181,24 +171,7 @@ router.post('/unFreezeUser',(req,res) => {
     })()
 });
 
-//充值接口
-router.get('/moneyStream/charge',(req,res) => {
-    const userModel = require(path.join(modulesPath,'mongooseModule','model','userModel'));
-    userModel.update({telNum:"18582967447"},{userName:"a"},(err,docs) => {
-        if(err){
-            res.json(err);
-        }
-        else{
-            res.json({'docs':docs});
-        }
-    });
-    // let obj = req.body;
-    // (async function(){
-    //     let result = await chargeMoney(obj.telNum,obj.sum,obj.type);
-    //     res.json(result);      
-    // })();
-});
-
+//管理员充值接口
 router.post('/moneyStream/adminChangeMoney',(req,res) => {
     let obj = req.body;
     console.log(obj.type);
@@ -221,10 +194,12 @@ router.post('/moneyStream/adminChangeMoney',(req,res) => {
     }
 })
 
-//扣款接口
-router.get('/moneyStream/reduce',(req,res) => {
-    
-})
-
+router.get('/remove',(req,res) => {
+    const removeImg = require(path.join(modulesPath,'charges','removeImg'));
+    (async function(){
+       let result = await removeImg();
+       res.json(result);
+    })();
+});
 
 module.exports = router
