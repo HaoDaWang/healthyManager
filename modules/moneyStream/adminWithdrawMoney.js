@@ -26,7 +26,7 @@ function adminWithdrawMoneyPromise(telNum,sum){
                             }
                             //写入用户提现记录
                             else{
-                                userModel.update({telNum:telNum},{$push:{withdraw:{time:new Date(),sum:sum}}},(err,docs) => {
+                                userModel.update({telNum:telNum},{$push:{withdrawLog:{time:new Date(),sum:sum}}},(err,docs) => {
                                     if(err) reject(err);
                                     resolve({successful:"扣款成功"})
                                 })

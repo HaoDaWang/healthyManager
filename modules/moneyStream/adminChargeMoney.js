@@ -16,7 +16,7 @@ function adminChargeMoneyPromise(telNum,sum){
                     }
                     else {
                         //写入用户充值记录
-                        userModel.update({telNum,telNum},{$push:{chargeLog:{time:new Date(),sum:sum}}},(err,docs) => {
+                        userModel.update({telNum:telNum},{$push:{chargeLog:{time:new Date(),sum:sum}}},(err,docs) => {
                             if(err) reject(err);
                             resolve({successful:"充值成功"}) 
                         });

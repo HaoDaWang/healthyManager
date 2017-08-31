@@ -9,7 +9,12 @@ function getHealthyMoneyPromise(telNum){
         return (function(telNum){
             userModel.find({telNum:telNum},(err,docs) => {
                 if(err) reject(err);
-                resolve({successful:docs[0].healthyMoney})
+                if((!docs) || docs.length == 0){
+                    resolve({err:"获取错误，请检查该用户是否正确"})
+                }
+                else {
+                    resolve({successful:docs[0].healthyMoney})                    
+                }
             })
         })(telNum);
     });
