@@ -1,7 +1,7 @@
 const userModel = require('../mongooseModule/model/userModel');
 const judgeTypeObj = require('./judgeType');
 /**
- * 充值模块
+ * 充值健康金模块
  */
 
 function chargeMoneyPromise(telNum,sum,type){
@@ -13,12 +13,17 @@ function chargeMoneyPromise(telNum,sum,type){
                     resolve({err:'找不到该手机号，或该手机号还未注册'});
                 }
                 else{
-                    let nowMoneyObj = docs[0].nowMoney;
+                    let healthyMoneyObj = docs[0].healthyMoney;
                     //判断类型
-                    let updateJSON = judgeTypeObj.judgeType(judgeTypeObj.chargeMoney,type,sum,nowMoneyObj);
+                    let updateJSON = judgeTypeObj.judgeType(judgeTypeObj.chargeMoney,type,sum,healthyMoneyObj);
+                    //更新健康金额
                     userModel.update({telNum:telNum},{$set:updateJSON},(err,docs) => {
                         if(err) reject({err:err})
-                        resolve({successful:'充值成功'})
+                        //更新总健康金额
+                        userModel.update({telNum:telNum},{$inc:{totalMoney:sum}},(err,docs) => {
+                            if(err) reject(err);
+                            resolve({successful:'充值成功'})                            
+                        })
                     })
                 }
             });

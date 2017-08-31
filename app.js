@@ -6,8 +6,10 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var session = require('express-session');
 
+//路由模块
 var routerManager = require('./routes/routerManager');
 var chargeManager = require('./routes/chargeManager');
+var withdrawManager = require('./routes/withdrawManager')
 
 var app = express();
 
@@ -45,6 +47,8 @@ app.all("*",(req,res,next) => {
     next();
 })
 
+//拦截提现页面
+app.use('/withdrawManager',withdrawManager);
 //拦截充值管理页面
 app.use('/chargeManager',chargeManager);
 //拦截所有路由

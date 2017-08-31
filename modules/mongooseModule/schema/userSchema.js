@@ -21,7 +21,11 @@ let userSchema = new mongoose.Schema({
     teamInform:{ type:Array, default:[] },
     registeTime:{type:Date, default:new Date()},
     isFreeze:{type:Boolean, default:false},
-    state:{type:String ,default:'正常账号'}
+    state:{type:String ,default:'正常账号'},
+    VIP:{type:String, default:'无'},
+    zzb:{type:Number, default:0},
+    chargeLog:{type:Array,default:[]},
+    withdrawLog:{type:Array,default:[]}
 });
 
 module.exports = userSchema;

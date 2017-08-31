@@ -15,7 +15,11 @@ function adminChargeMoneyPromise(telNum,sum){
                         resolve({err:'充值发生错误，请检查用户是否存在'})
                     }
                     else {
-                        resolve({successful:"充值成功"})
+                        //写入用户充值记录
+                        userModel.update({telNum,telNum},{$push:{chargeLog:{time:new Date(),sum:sum}}},(err,docs) => {
+                            if(err) reject(err);
+                            resolve({successful:"充值成功"}) 
+                        });
                     }
                 }
             })

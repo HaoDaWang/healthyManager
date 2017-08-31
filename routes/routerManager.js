@@ -183,7 +183,7 @@ router.post('/moneyStream/adminChangeMoney',(req,res) => {
         })();
     }
     else if(obj.type == '扣款'){
-        const adminWithdraw = require(path.join(modulesPath,'moneyStream','adminChargeMoney'));
+        const adminWithdraw = require(path.join(modulesPath,'moneyStream','adminWithdrawMoney'));
         (async function(){
             let result = await adminWithdraw(obj.telNum,obj.sum);
             res.json(result);
@@ -204,6 +204,51 @@ router.get('/getUser/:telNum',(req,res) => {
     })();
 })
 
+
+//转换健康金
+router.post('/transferHealthMoney',(req,res) => {
+    //手机号 健康金类型 充值健康金金额 
+    const chargeMoney = require(path.join(modulesPath,'moneyStream','chargeMoney'));
+    const adminWithdrawMoney = require(path.join(modulesPath,'moneyStream','adminWithdrawMoney'));
+    let obj = req.body;
+    //需要扣款的数目
+    console.log('sum---------------'+obj.sum);
+    let withdrawMoney = (parseFloat(obj.sum) * parseFloat(0.055)).toFixed(2);
+    console.log("width ------------------" + withdrawMoney);
+    (async function(){
+        let adminWithdrawMoneyResult = await adminWithdrawMoney(obj.telNum,withdrawMoney);
+        if(adminWithdrawMoneyResult.err){
+            res.json(adminWithdrawMoneyResult)
+        }
+        else{
+            let result = await chargeMoney(obj.telNum,obj.sum,obj.type);
+            res.json(result);
+        }
+    })();
+})
+
+//判断更新等级
+router.post('/judgeVIP',(req,res) => {
+    const judgeVIP = require(path.join(modulesPath,'moneyStream','judgeLevel'));
+    (async function(){
+       let result = await judgeVIP(req.body.telNum);
+       res.json(result);
+    })();
+})
+
+//分页
+router.post('/limitPage',(req,res) => {
+    let obj = req.body;
+    let pageCount = parseInt(obj.pageCount);
+    let page = parseInt(obj.page);
+    let skip = (page-1) * pageCount;
+    const limitPage = require(path.join(modulesPath,'userInfo','limitPage'));
+    (async function(){
+       let result = await limitPage(skip,pageCount);
+       res.json(result);
+    })();
+})
+
 router.get('/remove',(req,res) => {
     const removeImg = require(path.join(modulesPath,'charges','removeImg'));
     (async function(){
@@ -211,7 +256,5 @@ router.get('/remove',(req,res) => {
        res.json(result);
     })();
 });
-
-
 
 module.exports = router

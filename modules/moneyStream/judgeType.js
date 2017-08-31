@@ -18,16 +18,16 @@ function judgeType(evalFunc,type,sum,nowMoneyObj){
     let updateJSON;
     switch(type){
         case 'jljkj':
-            updateJSON = {"nowMoney.jljkj":evalFunc(sum,nowMoneyObj.jljkj)}                         
+            updateJSON = {"healthyMoney.jljkj":evalFunc(sum,nowMoneyObj.jljkj)}                         
         break;
         case 'gwjkj':
-            updateJSON = {"nowMoney.gwjkj":evalFunc(sum,nowMoneyObj.jljkj)}   
+            updateJSON = {"healthyMoney.gwjkj":evalFunc(sum,nowMoneyObj.gwjkj)}   
         break;
         case 'zzjkj':
-            updateJSON = {"nowMoney.zzjkj":evalFunc(sum,nowMoneyObj.jljkj)}   
+            updateJSON = {"healthyMoney.zzjkj":evalFunc(sum,nowMoneyObj.zzjkj)}   
         break;
         case 'ltjkj':
-            updateJSON = {"nowMoney.ltjkj":evalFunc(sum,nowMoneyObj.jljkj)}   
+            updateJSON = {"healthyMoney.ltjkj":evalFunc(sum,nowMoneyObj.ltjkj)}   
         break;
         default:
             return {err:'没有匹配的健康金类型'};

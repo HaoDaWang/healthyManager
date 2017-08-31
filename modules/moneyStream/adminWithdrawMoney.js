@@ -15,7 +15,23 @@ function adminWithdrawMoneyPromise(telNum,sum){
                         resolve({err:'扣款发生错误，请检查用户是否存在'});
                     }
                     else{
-                        resolve({successful:"扣款成功"})
+                        //检查是否有足够余额扣款
+                        userModel.find({telNum:telNum},(err,docs) => {
+                            if(err) reject(err);
+                            if(docs[0].nowMoney < 0){
+                                userModel.update({telNum:telNum},{$inc:{nowMoney: parseFloat(sum).toFixed(2)}},(err,docs) => {
+                                    if(err) reject(err);
+                                    resolve({err:"扣款失败，请检查账户余额"})
+                                })
+                            }
+                            //写入用户提现记录
+                            else{
+                                userModel.update({telNum:telNum},{$push:{withdraw:{time:new Date(),sum:sum}}},(err,docs) => {
+                                    if(err) reject(err);
+                                    resolve({successful:"扣款成功"})
+                                })
+                            }
+                        })
                     }
                 }
             })

@@ -16,15 +16,16 @@ function readdir(path){
     });
 }
 
-function removeImgPromise(telArr){
+//target为标识目前传进来的Model是什么
+function removeImgPromise(targetModel, telArr, target){
     console.log('dirpath is ' + dirPath);
     return new Promise((resolve,reject) => {
         return (function(telArr){
             console.log(telArr);
             if(!telArr){
-                console.log("111111111111111111")
                 //删除所有图片
                 (async function(){
+                    console.log("111111111111111111")
                     //读取该文件夹
                     let files = await readdir(dirPath);
                     for(let val of files){
@@ -45,12 +46,17 @@ function removeImgPromise(telArr){
                     queryJSON = {telNum:val}
                     queryArray.push(queryJSON)
                 }
-                chargeModel.find({$or:queryArray},(err,docs) => {
+                targetModel.find({$or:queryArray},(err,docs) => {
                     console.log(`docs----------------------${JSON.stringify(docs)}`);
                     if(err) reject(err);
                     let filePath;
                     for(let val of docs){
-                        filePath = dirPath + val.imgPath.split('images')[1];
+                        if(target == 'withdrawModel'){
+                            filePath = dirPath + val.imgPath.split('images')[1];   
+                        }
+                        else if(target == 'chargeModel'){
+                            filePath = dirPath + val.withdrawCode.split('images')[1];   
+                        }
                         console.log('filepath is ' + filePath);
                         console.log(filePath);
                         fs.unlink(filePath,err => {
