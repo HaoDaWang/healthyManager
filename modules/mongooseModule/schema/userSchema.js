@@ -25,7 +25,8 @@ let userSchema = new mongoose.Schema({
     VIP:{type:String, default:'无'},
     zzb:{type:Number, default:0},
     chargeLog:{type:Array,default:[]},
-    withdrawLog:{type:Array,default:[]}
+    withdrawLog:{type:Array,default:[]},
+    lowerLevelMoney:{type:Number,default:0}
 });
 
 module.exports = userSchema;
