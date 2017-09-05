@@ -21,18 +21,18 @@ router.post('/registe',(req,res) => {
     //验证码验证
     let validCode = obj.validCode;
     console.log(`req.validCode : ${globalValidCode}  obj.validCode : ${obj.validCode}`);
-    if(globalValidCode && validCode == globalValidCode){
+    // if(globalValidCode && validCode == globalValidCode){
         //注册
         (async function(){
             let result = await register(obj.userName,obj.passw,obj.telNum,obj.invitTelNum);
             console.log(`result : ${JSON.stringify(result)}`);
             res.json(result);
         })();
-    }
+    // }
     // 验证失败
-    else {
-        res.json({validErr:'手机验证码错误'})
-    }
+    // else {
+        // res.json({validErr:'手机验证码错误'})
+    // }
     
 });
 
@@ -210,10 +210,43 @@ router.post('/transferHealthMoney',(req,res) => {
     //手机号 健康金类型 充值健康金金额 
     const chargeMoney = require(path.join(modulesPath,'moneyStream','chargeMoney'));
     const adminWithdrawMoney = require(path.join(modulesPath,'moneyStream','adminWithdrawMoney'));
+    const getThreeInvitTelNum = require(path.join(modulesPath,'userInfo','getThreeInvitTelNum'));
+    const judgeTeam = require(path.join(modulesPath,'userInfo','judgeTeam'));
+    const consumeMoney = require(path.join(modulesPath,'moneyStream','consumeMoney'));
+    
     let obj = req.body;
+    //只能转换为流通健康金
+    if(!obj.type){
+        obj.type = 'ltjkj';
+    }
     //需要扣款的数目
     console.log('sum---------------'+obj.sum);
-    let withdrawMoney = (parseFloat(obj.sum) * parseFloat(0.055)).toFixed(2);
+    //判断是否购买的是套餐
+    let resultMoney = 0;
+    switch(obj.sum){
+        case 1818.18://100
+            resultMoney = 100;
+            break;
+        case 5454.55://300
+            resultMoney = 300;
+            break;
+        case 12727.27://700
+            resultMoney = 700;
+            break;
+        case 27272.73://1200
+            resultMoney = 1200;
+            break;
+        case 56363.64://3100
+            resultMoney = 3100;
+            break;
+        case 114545.46://6300
+            resultMoney = 6300;
+            break;
+        default:
+            withdrawMoney = (parseFloat(obj.sum) * parseFloat(0.055)).toFixed(2);
+            break;
+    }
+
     console.log("width ------------------" + withdrawMoney);
     (async function(){
         let adminWithdrawMoneyResult = await adminWithdrawMoney(obj.telNum,withdrawMoney);
@@ -221,8 +254,23 @@ router.post('/transferHealthMoney',(req,res) => {
             res.json(adminWithdrawMoneyResult)
         }
         else{
+            //记录消费金额
+            //let consumeMoneyResult = await consumeMoney(obj.telNum, withdrawMoney);
             let result = await chargeMoney(obj.telNum,obj.sum,obj.type);
-            res.json(result);
+            if(result.err){
+                res.json(result);
+            }
+            else {
+                //查询三级上家返回一个数组
+                //let invitTelNumArr = await getThreeInvitTelNum(obj.telNum);
+                // console.log(invitTelNumArr.successful)
+                //查询更新三个上家的下家奖励
+                //for(let val of invitTelNumArr.successful){
+                   //let r =  await judgeTeam(val, withdrawMoney);
+                   //console.log(r);
+                //}
+                res.json(result);
+            }
         }
     })();
 })
@@ -256,5 +304,16 @@ router.get('/remove',(req,res) => {
        res.json(result);
     })();
 });
+
+//购买健康金
+//手机号 购买健康金的等级
+router.post('/buyService',(req,res) => {
+    let obj = req.body;
+    const buyService = require(path.join(modulesPath,'icp','buyService'));
+    (async function(){
+        let result = await buyService(obj.telNum,obj.service);
+        res.json(result);
+    })();
+})
 
 module.exports = router

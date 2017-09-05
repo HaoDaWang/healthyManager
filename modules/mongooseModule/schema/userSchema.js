@@ -8,7 +8,7 @@ let userSchema = new mongoose.Schema({
     userName:{ type:String },
     telNum:{ type:String },
     passw:{ type:String },
-    invitTelNum:{ type:String },
+    invitTelNum:{ type:String, default:""},
     level:{ type:Number, default:0 },
     totalMoney:{ type:Number, default:0 },
     nowMoney:{type:Number, default:0},
@@ -26,7 +26,11 @@ let userSchema = new mongoose.Schema({
     zzb:{type:Number, default:0},
     chargeLog:{type:Array,default:[]},
     withdrawLog:{type:Array,default:[]},
-    lowerLevelMoney:{type:Number,default:0}
+    incomeLog:{type:Array, default:[]},
+    lowerLevelMoney:{type:Number,default:0},
+    consumeMoney:{type:Number,default:0},
+    service:{type:Number,default:0},
+    isExit:{type:Boolean,default:false}
 });
 
 module.exports = userSchema;
