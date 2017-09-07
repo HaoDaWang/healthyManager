@@ -16,6 +16,10 @@ function buyService(telNum,service){
         (async function(){
             serviceModel.find({star:service},(err,docs) => {
                 if(err) reject(err);
+                if(docs.length == 0){
+                    resolve({err:"字段有误"});
+                    return;
+                }
                 //需要扣除的金额
                 let price = docs[0].price;
                 //相应需要扣除的现金

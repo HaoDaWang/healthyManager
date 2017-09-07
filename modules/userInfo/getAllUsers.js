@@ -1,4 +1,5 @@
 const userModel = require('../mongooseModule/model/userModel');
+const judgeVIP = require('../moneyStream/judgeVIP');
 
 /**
  * 拿到所有用户资料模块
@@ -12,6 +13,9 @@ function getAllUsersPromise(){
                     reject(err);
                 }
                 else{
+                    for(let val of docs){
+                        judgeVIP(val.telNum);
+                    }
                     resolve(docs);
                 }
             })

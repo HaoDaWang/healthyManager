@@ -30,7 +30,13 @@ let userSchema = new mongoose.Schema({
     lowerLevelMoney:{type:Number,default:0},
     consumeMoney:{type:Number,default:0},
     service:{type:Number,default:0},
-    isExit:{type:Boolean,default:false}
+    isExit:{type:Boolean,default:false},
+    sex:{type:String},
+    IDNum:{type:String},
+    BankCardNum:{type:String},
+    openingBank:{type:String},
+    headImgPath:{type:String},
+    promote:{type:String}
 });
 
 module.exports = userSchema;

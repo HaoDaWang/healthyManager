@@ -1,9 +1,9 @@
 const userModel = require('../mongooseModule/model/userModel');
 const getTeamInfo = require('./getTeamInfo');
 
-function getSales(){
+function getAchievement(){
     return new Promise((resolve,reject) => {
-        userModel.find({},(err,docs) => {
+       userModel.find({},(err,docs) => {
             if(err) reject(err);
             (async function(){
                 let arr = [];
@@ -17,4 +17,4 @@ function getSales(){
     });
 }
 
-module.exports = getSales;
+module.exports = getAchievement;

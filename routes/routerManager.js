@@ -120,7 +120,9 @@ router.get('/backControl',(req,res) => {
 //获得所有用户信息
 router.get('/getAllUsers',(req,res) => {
     const getAllUsers = require(path.join(modulesPath,'userInfo','getAllUsers'));
+    const judgeVIP = require(path.join(modulesPath,'moneyStream','judgeVIP'));
     (async function(){
+        let updateResult = await judgeVIP();
         let result = await getAllUsers();
         res.json(result);
     })();
@@ -198,9 +200,17 @@ router.post('/moneyStream/adminChangeMoney',(req,res) => {
 router.get('/getUser/:telNum',(req,res) => {
     console.log(req.params);
     const getUser = require(path.join(modulesPath,'userInfo','getUser'));
+    const judgeVIP = require(path.join(modulesPath,'moneyStream','judgeVIP'));
     (async function(){
-        let result = await getUser(req.params.telNum);
-        res.json(result)
+        //更新指定用户的钻卡什么卡的信息
+        let updateResult = await judgeVIP(req.params.telNum);
+        if(updateResult.err){
+            res.json(updateResult);
+        }
+        else{
+            let result = await getUser(req.params.telNum);
+            res.json(result)   
+        }
     })();
 })
 
@@ -315,5 +325,77 @@ router.post('/buyService',(req,res) => {
         res.json(result);
     })();
 })
+
+//获取销量数据
+router.get('/getConsume',(req,res) => {
+    const getSales = require(path.join(modulesPath,'icp','getSales'));
+    (async function(){
+        let result = await getSales();
+        res.json(result);
+    })();
+});
+
+//使者动态收益
+router.get('/icpIncome',(req,res) => {
+    const getIcpIncome = require(path.join(modulesPath,'icp','judgePromote'));
+    (async function(){
+        let judgeResult = await getIcpIncome.judgePromote();
+        let dataResult = await getIcpIncome.getPromoteData();
+        res.json(dataResult);
+    })();
+});
+
+//使者团队收益
+router.get('/getAchievement',(req,res) => {
+    const getAchievement = require(path.join(modulesPath,'icp','getAchievement'));
+    (async function(){
+        let result = await getAchievement();
+        res.json(result);
+    })();
+})
+
+//修改预售金额
+router.post('/editExpectMoney',(req,res) => {
+    const editExpectMoney = require(path.join(modulesPath,'prize','editExpectMoney'));
+    let obj = req.body;
+    (async function(){
+        let result = await editExpectMoney(obj.expectMoney);
+        res.json(result);
+    })();
+});
+
+//上传用户头像
+let multer = require('multer');
+let storage = multer.diskStorage({
+    destination:(req,file,cb) => {
+        cb(null,'./public/images')
+    },
+    filename:(req,file,cb) => {
+        cb(null,file.fieldname  + '.jpg')
+    }
+});
+let upload = multer({storage:storage})
+router.post('/uploadHeadImg',upload.single('chargeImg'),(req,res) => {
+    let baseImgPath = "http://localhost:3000/images"; 
+    let imgPath = baseImgPath + req.file.filename;
+    req.session.imgPath = imgPath;
+    let obj = req.body;
+    const uploadHeadImg = require(path.join(path.join(modulesPath,'userInfo','uploadHeadImg')));
+    (async function(){
+        let result = await uploadHeadImg(imgPath,obj.telNum);
+        res.json(result);
+    })();
+})
+
+//上传用户信息
+//开户信息 银行卡号 身份证号 性别 昵称
+router.post('/putUserInfo',(req,res) => {
+    let obj = req.body;
+    const putUserInfo = require('../userInfo/putUserInfo');
+    (async function(){
+        let result = await putUserInfo(obj.telNum, obj.userName, obj.sex, obj.IDNum, obj.BankCardNum, obj.openingBank);
+        res.json(result);
+    })();
+});
 
 module.exports = router
